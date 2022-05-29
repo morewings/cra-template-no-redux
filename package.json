@@ -1,0 +1,98 @@
+{
+  "name": "cra-template-quickstart-redux",
+  "version": "1.2.2",
+  "license": "MIT",
+  "engines": {
+    "node": ">=16"
+  },
+  "description": "Opinionated quickstart Create React App template with Redux, React Testing Library and custom eslint and stylelint configurations",
+  "main": "template.json",
+  "keywords": [
+    "react",
+    "create-react-app",
+    "cra-template",
+    "template",
+    "react-testing-library",
+    "testing-library",
+    "eslint",
+    "redux"
+  ],
+  "files": [
+    "template",
+    "template.json"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/morewings/cra-template-quickstart-redux",
+    "directory": "/"
+  },
+  "bugs": {
+    "url": "https://github.com/morewings/cra-template-quickstart-redux/issues"
+  },
+  "homepage": "https://cra-template-quickstart-redux.netlify.app",
+  "dependencies": {
+    "@babel/runtime": "^7.16.7",
+    "@testing-library/jest-dom": "^5.16.1",
+    "@testing-library/react": "^12.1.2",
+    "@testing-library/react-hooks": "^7.0.2",
+    "@testing-library/user-event": "^13.5.0",
+    "axios": "^0.24.0",
+    "eslint-config-airbnb": "^18.2.1",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-config-react-app": "^7.0.0",
+    "eslint-plugin-fp": "^2.3.0",
+    "eslint-plugin-prettier": "^3.4.0",
+    "husky": "^7.0.4",
+    "lint-staged": "^12.3.2",
+    "prettier": "^2.5.1",
+    "prop-types": "^15.8.1",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2",
+    "react-redux": "^7.2.6",
+    "react-scripts": "5.0.0",
+    "react-test-renderer": "^17.0.2",
+    "redux": "^4.1.2",
+    "redux-mock-store": "^1.5.4",
+    "stylelint": "^13.13.1",
+    "stylelint-config-standard": "^22.0.0",
+    "stylelint-order": "^4.1.0"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject",
+    "clean:files": "node ./cleanFiles.js",
+    "copy:files": "node ./copyFiles.js",
+    "prepublishOnly": "yarn clean:files && yarn copy:files && yarn write:template",
+    "fix:js": "npx eslint --fix ./src/",
+    "lint:js": "npx eslint ./src/",
+    "lint:style": "npx stylelint ./src/",
+    "fix:style": "npx stylelint ./src/ --fix",
+    "start:docs": "start-storybook -p 6006 -s public",
+    "build:docs": "build-storybook -s public",
+    "write:template": "node ./writeTemplateConfig.js",
+    "prepare": "husky install"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "devDependencies": {
+    "@storybook/addon-actions": "6.4.19",
+    "@storybook/addon-essentials": "6.4.19",
+    "@storybook/addon-links": "6.4.19",
+    "@storybook/node-logger": "6.4.19",
+    "@storybook/react": "6.4.19",
+    "recursive-copy": "2.0.13",
+    "rimraf": "3.0.2"
+  }
+}
