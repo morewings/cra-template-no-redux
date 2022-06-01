@@ -2539,6 +2539,17 @@
     npmlog "^5.0.1"
     pretty-hrtime "^1.0.3"
 
+"@storybook/node-logger@6.5.6":
+  version "6.5.6"
+  resolved "https://registry.yarnpkg.com/@storybook/node-logger/-/node-logger-6.5.6.tgz#24422886f894978b10c2e23feb6bf0657f5e514f"
+  integrity sha512-bT0R0skDWW9iJS8AIG9zfSF8XzTffdc8hRlpXUF9+VQKds+8H9FyoV4tl8ySCuNNunt8Ic9GvW3Fakq49FUcgw==
+  dependencies:
+    "@types/npmlog" "^4.1.2"
+    chalk "^4.1.0"
+    core-js "^3.8.2"
+    npmlog "^5.0.1"
+    pretty-hrtime "^1.0.3"
+
 "@storybook/postinstall@6.4.19":
   version "6.4.19"
   resolved "https://registry.yarnpkg.com/@storybook/postinstall/-/postinstall-6.4.19.tgz#ba9799e30a727e39f51168f9c193aab99ef87bdf"
