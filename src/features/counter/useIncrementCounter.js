@@ -1,10 +1,10 @@
 import {useCallback} from 'react';
-import {useDispatch} from 'react-redux';
+import {useAppContext} from 'withReducer';
 import useCountValue from './selectors';
 import {INCREMENT_COUNTER} from './actionTypes';
 
 const useIncrementCounter = () => {
-  const dispatch = useDispatch();
+  const {dispatch} = useAppContext();
   const count = useCountValue();
   return useCallback(() => {
     dispatch({

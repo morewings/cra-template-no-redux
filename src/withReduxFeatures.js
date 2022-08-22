@@ -4,7 +4,7 @@ import {persistStateEnhancer} from 'enhancers/persistStateEnhancer';
 import {promiseResolverMiddleware} from 'middlewares/promiseResolverMiddleware';
 import {CounterReducer} from 'features/counter';
 import {RandomReducer} from 'features/random';
-import withProvider from 'withProvider';
+import {withProvider} from 'withProvider';
 
 /**
  * Create root reducer, containing

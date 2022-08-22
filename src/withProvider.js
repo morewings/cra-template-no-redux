@@ -4,7 +4,7 @@ import React from 'react';
  * Utility Higher Order Component factory. Returns HOC which takes another
  * Component and wraps it with given Provider.
  */
-const withProvider =
+export const withProvider =
   ({store, Provider}) =>
   WrappedComponent =>
   props =>
@@ -13,5 +13,3 @@ const withProvider =
         <WrappedComponent {...props} />
       </Provider>
     );
-
-export default withProvider;
