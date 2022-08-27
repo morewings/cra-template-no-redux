@@ -1,6 +1,5 @@
 import React from 'react';
 import {useCountValue, useIncrementCounter} from 'features/counter';
-import {useAppContext} from 'withReducer';
 import classes from './Counter.module.css';
 
 const Counter = () => {
@@ -10,8 +9,6 @@ const Counter = () => {
    *  to make component global state agnostic
    */
   const count = useCountValue();
-
-  const {dispatch, state} = useAppContext();
 
   /** Create incrementCounter action, using custom hook from feature */
   const incrementCounter = useIncrementCounter();

@@ -1,5 +1,5 @@
 import {useCallback} from 'react';
-import {useAppContext} from 'withReducer';
+import {useAppContext} from 'AppContext';
 import useCountValue from './selectors';
 import {INCREMENT_COUNTER} from './actionTypes';
 

@@ -12395,7 +12395,7 @@ redux-mock-store@^1.5.4:
   dependencies:
     lodash.isplainobject "^4.0.6"
 
-redux@^4.0.0, redux@^4.1.2:
+redux@^4.0.0, redux@^4.0.5, redux@^4.1.2:
   version "4.2.0"
   resolved "https://registry.yarnpkg.com/redux/-/redux-4.2.0.tgz#46f10d6e29b6666df758780437651eeb2b969f13"
   integrity sha512-oSBmcKKIuIR4ME29/AeNUnl5L+hvBq7OaJWzaptTQJAntaPvxIJqfnjbaEiCzzaIz+XmVILfqAM3Ob0aXLPfjA==
@@ -12485,6 +12485,13 @@ regjsparser@^0.8.2:
   integrity sha512-J3LABycON/VNEu3abOviqGHuB/LOtOQj8SKmfP9anY5GfAVw/SPjwzSjxGjbZXIxbGfqTHtJw58C2Li/WkStmA==
   dependencies:
     jsesc "~0.5.0"
+
+reinspect@^1.1.0:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/reinspect/-/reinspect-1.1.0.tgz#e2cabeaf7d79a1e0295b483db1ebf88032aa4c1a"
+  integrity sha512-sYDAENbErxleBaDYuODWY8imD/ILvPCau8HV9XoGKWquYTmRMP9HRr32u9EqqjFu3no1MULYByRy6yABj61/+w==
+  dependencies:
+    redux "^4.0.5"
 
 relateurl@^0.2.7:
   version "0.2.7"

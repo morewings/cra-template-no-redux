@@ -1,11 +1,10 @@
 import {INCREMENT_COUNTER} from './actionTypes';
 
-const initialState = {
+export const initialState = {
   value: 0,
 };
 
-const reducer = (state = initialState, action) => {
-  console.log('recucer', state)
+const reducer = (state, action) => {
   switch (action.type) {
     case INCREMENT_COUNTER:
       return {...state, value: action.value};

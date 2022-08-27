@@ -1,8 +1,10 @@
-import React, {useContext} from 'react';
 import {combineReducers} from 'utils/combineReducers';
-import {CounterReducer} from 'features/counter';
+import {CounterReducer, initialState as counterState} from 'features/counter';
 import {RandomReducer} from 'features/random';
 import {createStoreProvider} from 'utils/createStoreProvider';
+import {AppContext} from 'AppContext';
+
+const initialState = {count: counterState};
 
 /**
  * Create root reducer, containing
@@ -13,14 +15,8 @@ const rootReducer = combineReducers({
   random: RandomReducer,
 });
 
-const AppContext = React.createContext();
-
-export const useAppContext = () => useContext(AppContext)
-
 export const withReducer = createStoreProvider({
   reducer: rootReducer,
   context: AppContext,
-  initialState: {
-    value: 0,
-  }
+  initialState,
 });
