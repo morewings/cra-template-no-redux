@@ -1,10 +1,10 @@
 import {combineReducers} from 'utils/combineReducers';
 import {CounterReducer, initialState as counterState} from 'features/counter';
-import {RandomReducer} from 'features/random';
+import {RandomReducer, initialState as randomState} from 'features/random';
 import {createStoreProvider} from 'utils/createStoreProvider';
 import {AppContext} from 'AppContext';
 
-const initialState = {count: counterState};
+const initialState = {count: counterState, random: randomState};
 
 /**
  * Create root reducer, containing

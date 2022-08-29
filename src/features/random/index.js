@@ -1,3 +1,3 @@
-export {default as RandomReducer} from './RandomReducer';
+export {default as RandomReducer, initialState} from './RandomReducer';
 export {useRandomNumber, useLoadingState} from './selectors';
 export {default as useGetRandomNumberQuery} from './useGetRandomNumberQuery';

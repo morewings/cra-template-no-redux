@@ -1,13 +1,13 @@
 import {GET_RANDOM_NUMBER} from './actionTypes';
 
-const initialState = {
+export const initialState = {
   number: undefined,
   isLoading: false,
   hasError: false,
   isFulfilled: false,
 };
 
-const reducer = (state = initialState, action) => {
+const reducer = (state, action) => {
   switch (action.type) {
     case `${GET_RANDOM_NUMBER}_PENDING`:
       return {
