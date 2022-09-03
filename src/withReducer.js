@@ -15,6 +15,12 @@ const rootReducer = combineReducers({
   random: RandomReducer,
 });
 
+/**
+ * HOC wraps provided component with app Context
+ * @function
+ * @param {React.ComponentElement} Component - React component to wrap
+ * @return {React.ElementType}
+ */
 export const withReducer = createStoreProvider({
   reducer: rootReducer,
   context: AppContext,

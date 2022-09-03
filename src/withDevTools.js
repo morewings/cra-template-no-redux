@@ -1,9 +1,16 @@
 import React from 'react';
 import {StateInspector} from 'reinspect';
 
-export const withDevTools = WrappedComponent => props =>
+
+/**
+ * HOC wraps provided component with app Redux devtools bridge
+ * @function
+ * @param {React.ComponentElement} Component - React component to wrap
+ * @return {React.ElementType}
+ */
+export const withDevTools = Component => props =>
   (
     <StateInspector>
-      <WrappedComponent {...props} />
+      <Component {...props} />
     </StateInspector>
   );
