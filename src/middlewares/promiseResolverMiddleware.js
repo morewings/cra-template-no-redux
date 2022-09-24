@@ -2,7 +2,6 @@
  * @see https://redux.js.org/understanding/history-and-design/middleware
  */
 export const promiseResolverMiddleware = dispatch => action => {
-  console.log('promiseResolverMiddleware')
   if (typeof action?.payload?.then === 'function') {
     action.payload.then(
       response => {

@@ -1,7 +1,6 @@
 import React from 'react';
 import {StateInspector} from 'reinspect';
 
-
 /**
  * HOC wraps provided component with app Redux devtools bridge
  * @function
