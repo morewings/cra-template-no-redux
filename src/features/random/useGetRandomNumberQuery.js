@@ -1,4 +1,4 @@
-import {useAppContext} from 'AppContext';
+import {useAppContext} from 'stateManagement';
 import axios from 'axios';
 import config from 'config';
 import {GET_RANDOM_NUMBER} from './actionTypes';

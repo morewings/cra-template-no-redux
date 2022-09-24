@@ -1,4 +1,4 @@
-import {useSelector} from 'utils/useSelector';
+import {useSelector} from 'stateManagement';
 
 /**
  * Custom React Hook to get count value from state.

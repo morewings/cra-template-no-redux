@@ -1,11 +1,11 @@
 import React, {useMemo} from 'react';
-import {useReducer} from 'utils/useReducer';
 import {promiseResolverMiddleware} from 'middlewares/promiseResolverMiddleware';
 import {loggerMiddleware} from 'middlewares/loggerMiddleware';
 import {combineReducers} from 'utils/combineReducers';
 import {CounterReducer, initialState as counterState} from 'features/counter';
 import {RandomReducer, initialState as randomState} from 'features/random';
-import {AppContext} from 'AppContext';
+import {AppContext} from './AppContext';
+import {useReducer} from './useReducer';
 
 /**
  * Create root reducer, containing
@@ -63,7 +63,7 @@ const initialState = {count: counterState, random: randomState};
  * @param {React.ComponentElement} Component - React component to wrap
  * @return {React.ElementType}
  */
-export const withReducer = createStoreProvider({
+export const withStore = createStoreProvider({
   reducer: rootReducer,
   context: AppContext,
   initialState,

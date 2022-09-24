@@ -1,5 +1,5 @@
 import {useCallback} from 'react';
-import {useAppContext} from 'AppContext';
+import {useAppContext} from 'stateManagement';
 import useCountValue from './selectors';
 import {INCREMENT_COUNTER} from './actionTypes';
 

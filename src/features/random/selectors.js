@@ -1,4 +1,4 @@
-import {useSelector} from 'utils/useSelector';
+import {useSelector} from 'stateManagement';
 
 /**
  * Custom React Hooks to get random.org API loading state and response from the state.
