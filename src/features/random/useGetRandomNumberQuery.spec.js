@@ -1,25 +1,23 @@
 import React from 'react';
-import {Provider} from 'react-redux';
 import axios from 'axios';
-import configureStore from 'redux-mock-store';
 import {waitFor} from '@testing-library/react';
-import {renderHook} from '@testing-library/react-hooks';
-import {promiseResolverMiddleware} from '../../middlewares/promiseResolverMiddleware';
-import {GET_RANDOM_NUMBER} from './actionTypes';
+import {renderHook, act} from '@testing-library/react-hooks';
+import {mockProvider} from 'stateManagement';
 import useGetRandomNumberQuery from './useGetRandomNumberQuery';
 
 jest.mock('axios');
+const enhancer = jest.fn();
 
 describe('features > counter > useGetRandomNumberQuery', () => {
-  /** Create mock store with middlewares */
-  const mockStore = configureStore([promiseResolverMiddleware]);
-
-  const store = mockStore({
-    random: {
-      isLoading: false,
-      hasError: false,
-      isFulfilled: false,
+  const Provider = mockProvider({
+    initialState: {
+      random: {
+        isLoading: false,
+        hasError: false,
+        isFulfilled: false,
+      },
     },
+    enhancers: [enhancer],
   });
 
   it('returns function', () => {
@@ -28,7 +26,7 @@ describe('features > counter > useGetRandomNumberQuery', () => {
      * @see https://react-hooks-testing-library.com/reference/api#renderhook
      */
     const {result} = renderHook(() => useGetRandomNumberQuery(), {
-      wrapper: ({children}) => <Provider store={store}>{children}</Provider>,
+      wrapper: ({children}) => <Provider>{children}</Provider>,
     });
 
     expect(result.current).toBeInstanceOf(Function);
@@ -36,13 +34,13 @@ describe('features > counter > useGetRandomNumberQuery', () => {
 
   describe('gets number', () => {
     afterEach(() => {
-      store.clearActions();
+      enhancer.mockClear();
     });
 
     /** Note that tests functions are async */
     it(`handles successful API query`, async () => {
       const {result} = renderHook(() => useGetRandomNumberQuery(), {
-        wrapper: ({children}) => <Provider store={store}>{children}</Provider>,
+        wrapper: ({children}) => <Provider>{children}</Provider>,
       });
 
       /** Mock response from API */
@@ -54,29 +52,36 @@ describe('features > counter > useGetRandomNumberQuery', () => {
        */
       axios.get.mockImplementationOnce(() => Promise.resolve({data: response}));
 
-      /**
-       * Wait until async action finishes
-       */
-      await result.current();
-
-      /** First dispatched action should have _PENDING suffix */
-      expect(store.getActions()[0]).toEqual({
-        type: `${GET_RANDOM_NUMBER}_PENDING`,
+      act(() => {
+        result.current();
       });
 
       await waitFor(() => {
-        /** Second dispatched action should have _FULFILLED suffix */
-        expect(store.getActions()[1].type).toEqual(
-          `${GET_RANDOM_NUMBER}_FULFILLED`
-        );
-        /** Second dispatched action should deliver response from API */
-        expect(store.getActions()[1].payload.data).toEqual(response);
+        expect(enhancer).toBeCalledTimes(2);
+      });
+
+      expect(enhancer.mock.calls[1][0].state.random).toEqual({
+        hasError: false,
+        isFulfilled: false,
+        isLoading: true,
+        number: undefined,
+      });
+
+      await waitFor(() => {
+        expect(enhancer).toBeCalledTimes(3);
+      });
+
+      expect(enhancer.mock.calls[2][0].state.random).toEqual({
+        hasError: false,
+        isFulfilled: true,
+        isLoading: false,
+        number: response,
       });
     });
 
     it(`handles rejected API query`, async () => {
       const {result} = renderHook(() => useGetRandomNumberQuery(), {
-        wrapper: ({children}) => <Provider store={store}>{children}</Provider>,
+        wrapper: ({children}) => <Provider>{children}</Provider>,
       });
 
       /**
@@ -88,18 +93,30 @@ describe('features > counter > useGetRandomNumberQuery', () => {
       /**
        * Wait until async action finishes
        */
-      await result.current();
-
-      /** First dispatched action should have _PENDING suffix */
-      expect(store.getActions()[0]).toEqual({
-        type: `${GET_RANDOM_NUMBER}_PENDING`,
+      act(() => {
+        result.current();
       });
 
       await waitFor(() => {
-        /** Second dispatched action should have _REJECTED suffix */
-        expect(store.getActions()[1].type).toEqual(
-          `${GET_RANDOM_NUMBER}_REJECTED`
-        );
+        expect(enhancer).toBeCalledTimes(2);
+      });
+
+      expect(enhancer.mock.calls[1][0].state.random).toEqual({
+        hasError: false,
+        isFulfilled: false,
+        isLoading: true,
+        number: undefined,
+      });
+
+      await waitFor(() => {
+        expect(enhancer).toBeCalledTimes(3);
+      });
+
+      expect(enhancer.mock.calls[2][0].state.random).toEqual({
+        hasError: true,
+        isFulfilled: false,
+        isLoading: false,
+        number: undefined,
       });
     });
   });
