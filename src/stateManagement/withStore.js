@@ -1,9 +1,10 @@
-import React, {useMemo} from 'react';
+import React, {useMemo, useEffect} from 'react';
 import {promiseResolverMiddleware} from 'middlewares/promiseResolverMiddleware';
 import {loggerMiddleware} from 'middlewares/loggerMiddleware';
 import {combineReducers} from 'utils/combineReducers';
 import {CounterReducer, initialState as counterState} from 'features/counter';
 import {RandomReducer, initialState as randomState} from 'features/random';
+import {compose} from 'utils/compose';
 import {AppContext} from './AppContext';
 import {useReducer} from './useReducer';
 
@@ -11,7 +12,7 @@ import {useReducer} from './useReducer';
  * Create root reducer, containing
  * all features of the application
  */
-const rootReducer = combineReducers({
+export const rootReducer = combineReducers({
   count: CounterReducer,
   random: RandomReducer,
 });
@@ -38,7 +39,7 @@ const rootReducer = combineReducers({
  * @return {function(React.ComponentElement): React.ElementType}
  */
 export const createStoreProvider =
-  ({initialState, reducer, context}) =>
+  ({initialState, reducer, context, enhancers = []}) =>
   WrappedComponent =>
   props => {
     const {Provider} = context;
@@ -46,6 +47,17 @@ export const createStoreProvider =
       promiseResolverMiddleware,
       loggerMiddleware,
     ]);
+
+    /* Effect to apply enhancers after state change or when application is unmounted */
+    useEffect(() => {
+      if (enhancers.length > 0) {
+        compose(...enhancers)({state, dispatch});
+      }
+      // return () => {
+      //   compose(...enhancers)({state, dispatch});
+      // };
+    }, [state]);
+
     // Important(!): memoize array value. Else all context consumers update on *every* render
     const store = useMemo(() => ({state, dispatch}), [state]);
     return (

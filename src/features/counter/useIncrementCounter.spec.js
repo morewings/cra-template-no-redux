@@ -1,25 +1,22 @@
 import React from 'react';
-import {Provider} from 'react-redux';
-import configureStore from 'redux-mock-store';
 import {renderHook} from '@testing-library/react-hooks';
-import {INCREMENT_COUNTER} from './actionTypes';
+import {waitFor} from '@testing-library/react';
+import {mockProvider} from 'stateManagement';
 import useIncrementCounter from './useIncrementCounter';
+
+const enhancer = jest.fn();
 
 describe('features > counter > useIncrementCounter', () => {
   /** Create mock store with the count value */
-  const mockStore = configureStore([]);
   const value = 6;
-  const store = mockStore({
-    count: {
-      value,
+  const Provider = mockProvider({
+    initialState: {
+      count: {
+        value,
+      },
     },
+    enhancers: [enhancer],
   });
-
-  /**
-   * Add spy to watch for store.dispatch method.
-   * @see https://jestjs.io/docs/en/jest-object#jestspyonobject-methodname
-   */
-  jest.spyOn(store, 'dispatch');
 
   /**
    * Jest hook which runs before each test,
@@ -31,7 +28,7 @@ describe('features > counter > useIncrementCounter', () => {
      * because jest saves calls data for spies and mocks.
      * @see https://jestjs.io/docs/en/mock-function-api#mockfnmockclear
      */
-    store.dispatch.mockClear();
+    enhancer.mockClear();
   });
 
   it('returns function', () => {
@@ -40,28 +37,31 @@ describe('features > counter > useIncrementCounter', () => {
      * @see https://react-hooks-testing-library.com/reference/api#renderhook
      */
     const {result} = renderHook(() => useIncrementCounter(), {
-      wrapper: ({children}) => <Provider store={store}>{children}</Provider>,
+      wrapper: ({children}) => <Provider>{children}</Provider>,
     });
 
     expect(result.current).toBeInstanceOf(Function);
+    /** enhancer should be run once */
+    expect(enhancer).toHaveBeenCalledTimes(1);
   });
 
-  describe('incrementCounter', () => {
-    it('increments counter value by 1', () => {
-      const {result} = renderHook(() => useIncrementCounter(), {
-        wrapper: ({children}) => <Provider store={store}>{children}</Provider>,
-      });
+  it('increments counter value by 1', async () => {
+    const {result} = renderHook(() => useIncrementCounter(), {
+      wrapper: ({children}) => <Provider>{children}</Provider>,
+    });
 
-      result.current();
+    result.current();
 
-      /** store.dispatch should be run once */
-      expect(store.dispatch).toHaveBeenCalledTimes(1);
+    /** enhancer should be run twice */
+    await waitFor(() => {
+      expect(enhancer).toHaveBeenCalledTimes(2);
+    });
 
-      /** store.dispatch should be run with proper action */
-      expect(store.dispatch).toHaveBeenCalledWith({
-        type: INCREMENT_COUNTER,
-        value: value + 1, // value should be increased by one
-      });
+    /** state should be updated properly */
+    expect(enhancer.mock.calls[1][0].state).toEqual({
+      count: {
+        value: value + 1,
+      },
     });
   });
 });

@@ -1,16 +1,16 @@
 import React from 'react';
-import {Provider} from 'react-redux';
-import configureStore from 'redux-mock-store';
 import {renderHook} from '@testing-library/react-hooks';
+import {mockProvider} from 'stateManagement';
 import useCountValue from './selectors';
 
 describe('features > counter > useCountValue', () => {
-  /** Create mock store with the count value */
-  const mockStore = configureStore([]);
   const value = 6;
-  const store = mockStore({
-    count: {
-      value,
+
+  const Provider = mockProvider({
+    initialState: {
+      count: {
+        value,
+      },
     },
   });
 
@@ -20,9 +20,8 @@ describe('features > counter > useCountValue', () => {
      * @see https://react-hooks-testing-library.com/reference/api#renderhook
      */
     const {result} = renderHook(() => useCountValue(), {
-      wrapper: ({children}) => <Provider store={store}>{children}</Provider>,
+      wrapper: ({children}) => <Provider>{children}</Provider>,
     });
-
     expect(result.current).toBe(value);
   });
 });
