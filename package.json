@@ -1,11 +1,11 @@
 {
-  "name": "cra-template-quickstart-redux",
-  "version": "1.2.2",
+  "name": "cra-template-no-redux",
+  "version": "0.0.1",
   "license": "MIT",
   "engines": {
     "node": ">=16"
   },
-  "description": "Opinionated quickstart Create React App template with Redux, React Testing Library and custom eslint and stylelint configurations",
+  "description": "Create React App template with Redux features done using React library tools. Features: shared state, dispatch, middlewares, state enhancers and devtools support",
   "main": "template.json",
   "keywords": [
     "react",
@@ -15,7 +15,8 @@
     "react-testing-library",
     "testing-library",
     "eslint",
-    "redux"
+    "redux",
+    "useReducer"
   ],
   "files": [
     "template",
@@ -23,13 +24,13 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/morewings/cra-template-quickstart-redux",
+    "url": "https://github.com/morewings/cra-template-no-redux",
     "directory": "/"
   },
   "bugs": {
-    "url": "https://github.com/morewings/cra-template-quickstart-redux/issues"
+    "url": "https://github.com/morewings/cra-template-no-redux/issues"
   },
-  "homepage": "https://cra-template-quickstart-redux.netlify.app",
+  "homepage": "https://github.com/morewings/cra-template-no-redux",
   "dependencies": {
     "@babel/runtime": "^7.19.0",
     "@testing-library/jest-dom": "^5.16.1",
