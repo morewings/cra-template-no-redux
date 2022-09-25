@@ -32,6 +32,5 @@ jobs:
         run: |
           yarn --silent
           yarn lint:js --quiet
-          yarn lint:style --quiet
           yarn test --silent
           yarn start --smoke-test

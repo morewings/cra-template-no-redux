@@ -52,10 +52,7 @@
     "react-dom": "^17.0.2",
     "react-scripts": "5.0.1",
     "react-test-renderer": "^17.0.2",
-    "reinspect": "^1.1.0",
-    "stylelint": "^13.13.1",
-    "stylelint-config-standard": "^22.0.0",
-    "stylelint-order": "^4.1.0"
+    "reinspect": "^1.1.0"
   },
   "scripts": {
     "start": "react-scripts start",
@@ -67,8 +64,6 @@
     "prepublishOnly": "yarn clean:files && yarn copy:files && yarn write:template",
     "fix:js": "npx eslint --fix ./src/",
     "lint:js": "npx eslint ./src/",
-    "lint:style": "npx stylelint ./src/",
-    "fix:style": "npx stylelint ./src/ --fix",
     "write:template": "node ./writeTemplateConfig.js",
     "prepare": "husky install"
   },
