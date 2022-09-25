@@ -84,7 +84,7 @@
     ]
   },
   "devDependencies": {
-    "recursive-copy": "2.0.13",
+    "recursive-copy": "2.0.14",
     "rimraf": "3.0.2"
   }
 }
