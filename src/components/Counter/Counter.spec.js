@@ -15,7 +15,7 @@ describe('components > Counter', () => {
 
   const Provider = mockProvider({
     initialState,
-    enhancers: [enhancer]
+    enhancers: [enhancer],
   });
 
   /**

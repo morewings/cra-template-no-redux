@@ -7,5 +7,5 @@ export const mockProvider = ({initialState, enhancers}) =>
     reducer: rootReducer,
     context: AppContext,
     initialState,
-    enhancers
+    enhancers,
   })(Fragment);
