@@ -45,7 +45,8 @@
         "allowThis": true,
         "exceptions": [{"property": "propTypes"}, {"property": "defaultProps"}, {"property": "current"}]
       }
-    ]
+    ],
+    "react/function-component-definition": "off"
   },
   "plugins": ["prettier", "fp"],
   "settings": {
