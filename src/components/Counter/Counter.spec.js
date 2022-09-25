@@ -1,24 +1,22 @@
 import React from 'react';
-import {Provider} from 'react-redux';
-import {render, fireEvent} from '@testing-library/react';
-import configureStore from 'redux-mock-store';
-import {INCREMENT_COUNTER} from 'features/counter/actionTypes';
+import {render, fireEvent, waitFor} from '@testing-library/react';
+import {mockProvider} from 'stateManagement';
 import Counter from './Counter';
+
+const enhancer = jest.fn();
 
 describe('components > Counter', () => {
   /** Create mock store with the count value */
-  const mockStore = configureStore([]);
-  const store = mockStore({
+  const initialState = {
     count: {
       value: 6,
     },
-  });
+  };
 
-  /**
-   * Add spy to watch for store.dispatch method.
-   * @see https://jestjs.io/docs/en/jest-object#jestspyonobject-methodname
-   */
-  jest.spyOn(store, 'dispatch');
+  const Provider = mockProvider({
+    initialState,
+    enhancers: [enhancer],
+  });
 
   /**
    * Jest hook which runs before each test,
@@ -30,7 +28,7 @@ describe('components > Counter', () => {
      * because jest saves calls data for spies and mocks.
      * @see https://jestjs.io/docs/en/mock-function-api#mockfnmockclear
      */
-    store.dispatch.mockClear();
+    enhancer.mockClear();
   });
 
   it('renders without crashing', () => {
@@ -42,8 +40,8 @@ describe('components > Counter', () => {
      * `wrapper`
      * @see https://testing-library.com/docs/react-testing-library/api#wrapper
      */
-    const {asFragment, getByText} = render(<Counter />, {
-      wrapper: ({children}) => <Provider store={store}>{children}</Provider>,
+    const {asFragment, container} = render(<Counter />, {
+      wrapper: ({children}) => <Provider>{children}</Provider>,
     });
 
     /**
@@ -53,16 +51,18 @@ describe('components > Counter', () => {
     expect(asFragment()).toMatchSnapshot();
 
     /** More precise test for counter value */
-    expect(getByText(/6/i).textContent).toBe('6'); // 6 is value we expect, we need to convert Number to String, because HTMLElement textContent method returns string value
+    expect(container.querySelector('strong')).toHaveTextContent(
+      String(initialState.count.value)
+    );
   });
 
-  it('dispatches an action on button click', () => {
+  it('dispatches an action on button click', async () => {
     /**
      * `getByRole`:
      * @see https://testing-library.com/docs/dom-testing-library/api-queries#byrole
      */
     const {getByRole} = render(<Counter />, {
-      wrapper: ({children}) => <Provider store={store}>{children}</Provider>,
+      wrapper: ({children}) => <Provider>{children}</Provider>,
     });
 
     /**
@@ -71,13 +71,16 @@ describe('components > Counter', () => {
      */
     fireEvent.click(getByRole('button'));
 
-    /** Check if store.dispatch method was run */
-    expect(store.dispatch).toHaveBeenCalledTimes(1);
+    /** enhancer should be run twice */
+    await waitFor(() => {
+      expect(enhancer).toHaveBeenCalledTimes(2);
+    });
 
-    /** Check if store.dispatch was run with correct action */
-    expect(store.dispatch).toHaveBeenCalledWith({
-      type: INCREMENT_COUNTER,
-      value: 7,
+    /** state should be updated properly */
+    expect(enhancer.mock.calls[1][0].state).toEqual({
+      count: {
+        value: initialState.count.value + 1,
+      },
     });
   });
 });

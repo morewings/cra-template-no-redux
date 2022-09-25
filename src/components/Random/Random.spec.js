@@ -1,5 +1,4 @@
 import React from 'react';
-import {Provider} from 'react-redux';
 import {
   render,
   fireEvent,
@@ -8,19 +7,13 @@ import {
   waitForElementToBeRemoved,
 } from '@testing-library/react';
 import axios from 'axios';
-import configureStore from 'redux-mock-store';
-import {GET_RANDOM_NUMBER} from 'features/random/actionTypes';
-import {store as realStore} from 'withReduxFeatures';
-import {promiseResolverMiddleware} from '../../middlewares/promiseResolverMiddleware';
+import {initialState} from 'features/random';
+import {mockProvider} from 'stateManagement';
 import Random from './Random';
 
-/**
- * Create mock store
- * @see https://github.com/dmitry-zaets/redux-mock-store
- */
-const mockStore = configureStore([promiseResolverMiddleware]);
-
 jest.mock('axios');
+
+const enhancer = jest.fn();
 
 /* We use these strings to match HTMLElements */
 const pristineText = 'Click the button to get random number';
@@ -29,6 +22,10 @@ const errorText = 'Ups...';
 const response = 6;
 
 describe('components > Random', () => {
+  beforeEach(() => {
+    enhancer.mockClear();
+  });
+
   /**
    * Provide table of values to run tests with
    * @see https://jestjs.io/docs/en/api#describeeachtablename-fn-timeout
@@ -41,12 +38,14 @@ describe('components > Random', () => {
     ${false}  | ${false} | ${true}
   `('renders different store states', ({isLoading, hasError, isFulfilled}) => {
     it(`when isLoading === ${isLoading} && hasError === ${hasError} && isFulfilled === ${isFulfilled}`, () => {
-      const store = mockStore({
-        random: {
-          isLoading,
-          hasError,
-          isFulfilled,
-          number: isFulfilled ? 1 : undefined,
+      const Provider = mockProvider({
+        initialState: {
+          random: {
+            isLoading,
+            hasError,
+            isFulfilled,
+            number: isFulfilled ? 1 : undefined,
+          },
         },
       });
 
@@ -57,7 +56,7 @@ describe('components > Random', () => {
        * @see https://testing-library.com/docs/react-testing-library/api#wrapper
        */
       const {asFragment} = render(<Random />, {
-        wrapper: ({children}) => <Provider store={store}>{children}</Provider>,
+        wrapper: ({children}) => <Provider>{children}</Provider>,
       });
 
       /**
@@ -68,164 +67,202 @@ describe('components > Random', () => {
     });
   });
 
-  it('handles successful request', async () => {
-    /**
-     * Mock axios successful response
-     * @see https://www.robinwieruch.de/axios-jest
-     */
-    axios.get.mockImplementationOnce(() => Promise.resolve({data: response}));
-
-    /**
-     * `getByRole`:
-     * @see https://testing-library.com/docs/dom-testing-library/api-queries#byrole
-     */
-    const {asFragment, getByRole} = render(<Random />, {
-      wrapper: ({children}) => (
-        /* We use real store here, to get action through */
-        <Provider store={realStore}>{children}</Provider>
-      ),
-    });
-
-    /**
-     * Search for the button and make testing library click on it
-     * @see https://testing-library.com/docs/react-testing-library/cheatsheet#events
-     */
-    fireEvent.click(getByRole('button'));
-
-    /** Check that initial message has changed to loading. */
-    expect(asFragment()).toMatchSnapshot();
-    expect(screen.queryByText(pristineText)).not.toBeInTheDocument();
-    expect(screen.queryByText(loadingText)).toBeInTheDocument();
-
-    /** Check that loading message has changed to success. */
-    await waitForElementToBeRemoved(() => screen.queryByText(loadingText));
-    expect(asFragment()).toMatchSnapshot();
-    expect(screen.queryByText(pristineText)).not.toBeInTheDocument();
-    expect(screen.queryByText(loadingText)).not.toBeInTheDocument();
-    expect(screen.queryByText(response)).toBeInTheDocument();
-  });
-
-  it('handles rejected request', async () => {
-    /**
-     * Mock axios rejected response
-     * @see https://www.robinwieruch.de/axios-jest
-     */
-    axios.get.mockImplementationOnce(() => Promise.reject(new Error('')));
-
-    /**
-     * `getByRole`:
-     * @see https://testing-library.com/docs/dom-testing-library/api-queries#byrole
-     */
-    const {asFragment, getByRole} = render(<Random />, {
-      wrapper: ({children}) => (
-        /* We use real store here, to get action through */
-        <Provider store={realStore}>{children}</Provider>
-      ),
-    });
-
-    /**
-     * Search for the button and make testing library click on it
-     * @see https://testing-library.com/docs/react-testing-library/cheatsheet#events
-     */
-    fireEvent.click(getByRole('button'));
-
-    /** Check that initial message has changed to loading. */
-    expect(asFragment()).toMatchSnapshot();
-    expect(screen.queryByText(pristineText)).not.toBeInTheDocument();
-    expect(screen.queryByText(loadingText)).toBeInTheDocument();
-
-    /** Check that loading message has changed to error. */
-    await waitForElementToBeRemoved(() => screen.queryByText(loadingText));
-    expect(asFragment()).toMatchSnapshot();
-    expect(screen.queryByText(pristineText)).not.toBeInTheDocument();
-    expect(screen.queryByText(loadingText)).not.toBeInTheDocument();
-    expect(screen.queryByText(errorText)).toBeInTheDocument();
-  });
-
-  it('dispatches an action sequence on successful request made', async () => {
-    const store = mockStore({
-      random: {
-        isLoading: false,
-        hasError: false,
-        isFulfilled: false,
+  describe('request info', () => {
+    const Provider = mockProvider({
+      initialState: {
+        random: initialState,
       },
     });
+    it('handles successful', async () => {
+      /**
+       * Mock axios successful response
+       * @see https://www.robinwieruch.de/axios-jest
+       */
+      axios.get.mockImplementationOnce(() => Promise.resolve({data: response}));
 
-    /**
-     * Mock axios successful response
-     * @see https://www.robinwieruch.de/axios-jest
-     */
-    axios.get.mockImplementationOnce(() => Promise.resolve({data: response}));
+      /**
+       * `getByRole`:
+       * @see https://testing-library.com/docs/dom-testing-library/api-queries#byrole
+       */
+      const {asFragment, getByRole} = render(<Random />, {
+        wrapper: ({children}) => <Provider>{children}</Provider>,
+      });
 
-    /**
-     * `getByRole`:
-     * @see https://testing-library.com/docs/dom-testing-library/api-queries#byrole
-     */
-    const {getByRole} = render(<Random />, {
-      wrapper: ({children}) => <Provider store={store}>{children}</Provider>,
+      /**
+       * Search for the button and make testing library click on it
+       * @see https://testing-library.com/docs/react-testing-library/cheatsheet#events
+       */
+      fireEvent.click(getByRole('button'));
+
+      /** Check that initial message has changed to loading. */
+      expect(asFragment()).toMatchSnapshot();
+      expect(screen.queryByText(pristineText)).not.toBeInTheDocument();
+      expect(screen.queryByText(loadingText)).toBeInTheDocument();
+
+      /** Check that loading message has changed to success. */
+      await waitForElementToBeRemoved(() => screen.queryByText(loadingText));
+      expect(asFragment()).toMatchSnapshot();
+      expect(screen.queryByText(pristineText)).not.toBeInTheDocument();
+      expect(screen.queryByText(loadingText)).not.toBeInTheDocument();
+      expect(screen.queryByText(response)).toBeInTheDocument();
     });
 
-    /**
-     * Search for the button and make testing library click on it
-     * @see https://testing-library.com/docs/react-testing-library/cheatsheet#events
-     */
-    fireEvent.click(getByRole('button'));
+    it('handles rejected', async () => {
+      /**
+       * Mock axios rejected response
+       * @see https://www.robinwieruch.de/axios-jest
+       */
+      axios.get.mockImplementationOnce(() => Promise.reject(new Error('')));
 
-    /** First dispatched action should have _PENDING suffix */
-    expect(store.getActions()[0]).toEqual({
-      type: `${GET_RANDOM_NUMBER}_PENDING`,
+      /**
+       * `getByRole`:
+       * @see https://testing-library.com/docs/dom-testing-library/api-queries#byrole
+       */
+      const {asFragment, getByRole} = render(<Random />, {
+        wrapper: ({children}) => (
+          /* We use real store here, to get action through */
+          <Provider>{children}</Provider>
+        ),
+      });
+
+      /**
+       * Search for the button and make testing library click on it
+       * @see https://testing-library.com/docs/react-testing-library/cheatsheet#events
+       */
+      fireEvent.click(getByRole('button'));
+
+      /** Check that initial message has changed to loading. */
+      expect(asFragment()).toMatchSnapshot();
+      expect(screen.queryByText(pristineText)).not.toBeInTheDocument();
+      expect(screen.queryByText(loadingText)).toBeInTheDocument();
+
+      /** Check that loading message has changed to error. */
+      await waitForElementToBeRemoved(() => screen.queryByText(loadingText));
+      expect(asFragment()).toMatchSnapshot();
+      expect(screen.queryByText(pristineText)).not.toBeInTheDocument();
+      expect(screen.queryByText(loadingText)).not.toBeInTheDocument();
+      expect(screen.queryByText(errorText)).toBeInTheDocument();
     });
-
-    await waitFor(() => {
-      /** Second dispatched action should have _FULFILLED suffix */
-      expect(store.getActions()[1].type).toEqual(
-        `${GET_RANDOM_NUMBER}_FULFILLED`
-      );
-    });
-
-    /** Second dispatched action should deliver response from API */
-    expect(store.getActions()[1].payload.data).toEqual(response);
   });
 
-  it('dispatches an action sequence on rejected request made', async () => {
-    const store = mockStore({
-      random: {
-        isLoading: false,
+  describe('actions', () => {
+    it('dispatches an action sequence on successful request made', async () => {
+      const Provider = mockProvider({
+        initialState: {
+          random: {
+            isLoading: false,
+            hasError: false,
+            isFulfilled: false,
+          },
+        },
+        enhancers: [enhancer],
+      });
+
+      /**
+       * Mock axios successful response
+       * @see https://www.robinwieruch.de/axios-jest
+       */
+      axios.get.mockImplementationOnce(() => Promise.resolve({data: response}));
+
+      /**
+       * `getByRole`:
+       * @see https://testing-library.com/docs/dom-testing-library/api-queries#byrole
+       */
+      const {getByRole} = render(<Random />, {
+        wrapper: ({children}) => <Provider>{children}</Provider>,
+      });
+
+      /**
+       * Search for the button and make testing library click on it
+       * @see https://testing-library.com/docs/react-testing-library/cheatsheet#events
+       */
+      fireEvent.click(getByRole('button'));
+
+      /* Assert two initial state changes. 1st on component load, 2nd when loading process started */
+      expect(enhancer).toHaveBeenCalledTimes(2);
+      expect(enhancer.mock.calls[0][0].state.random).toEqual({
         hasError: false,
         isFulfilled: false,
-      },
+        isLoading: false,
+      });
+
+      expect(enhancer.mock.calls[1][0].state.random).toEqual({
+        hasError: false,
+        isFulfilled: false,
+        isLoading: true,
+      });
+
+      /* Assert two initial calls. 1st on component load, 2nd when loading process started */
+      await waitFor(() => {
+        expect(enhancer).toHaveBeenCalledTimes(3);
+      });
+
+      /* Assert 3rd state change, when response delivered */
+      expect(enhancer.mock.calls[2][0].state.random).toEqual({
+        hasError: false,
+        isFulfilled: true,
+        isLoading: false,
+        number: 6,
+      });
     });
 
-    /**
-     * Mock axios rejected response
-     * @see https://www.robinwieruch.de/axios-jest
-     */
-    axios.get.mockImplementationOnce(() => Promise.reject(new Error('')));
+    it('dispatches an action sequence on rejected request made', async () => {
+      const Provider = mockProvider({
+        initialState: {
+          random: {
+            isLoading: false,
+            hasError: false,
+            isFulfilled: false,
+          },
+        },
+        enhancers: [enhancer],
+      });
 
-    /**
-     * `getByRole`:
-     * @see https://testing-library.com/docs/dom-testing-library/api-queries#byrole
-     */
-    const {getByRole} = render(<Random />, {
-      wrapper: ({children}) => <Provider store={store}>{children}</Provider>,
-    });
+      /**
+       * Mock axios rejected response
+       * @see https://www.robinwieruch.de/axios-jest
+       */
+      axios.get.mockImplementationOnce(() => Promise.reject(new Error('')));
 
-    /**
-     * Search for the button and make testing library click on it
-     * @see https://testing-library.com/docs/react-testing-library/cheatsheet#events
-     */
-    fireEvent.click(getByRole('button'));
+      /**
+       * `getByRole`:
+       * @see https://testing-library.com/docs/dom-testing-library/api-queries#byrole
+       */
+      const {getByRole} = render(<Random />, {
+        wrapper: ({children}) => <Provider>{children}</Provider>,
+      });
 
-    /** First dispatched action should have _PENDING suffix */
-    expect(store.getActions()[0]).toEqual({
-      type: `${GET_RANDOM_NUMBER}_PENDING`,
-    });
+      /**
+       * Search for the button and make testing library click on it
+       * @see https://testing-library.com/docs/react-testing-library/cheatsheet#events
+       */
+      fireEvent.click(getByRole('button'));
 
-    await waitFor(() => {
-      /** Second dispatched action should have _REJECTED suffix */
-      expect(store.getActions()[1].type).toEqual(
-        `${GET_RANDOM_NUMBER}_REJECTED`
-      );
+      /* Assert two initial state changes. 1st on component load, 2nd when loading process started */
+      expect(enhancer).toHaveBeenCalledTimes(2);
+      expect(enhancer.mock.calls[0][0].state.random).toEqual({
+        hasError: false,
+        isFulfilled: false,
+        isLoading: false,
+      });
+
+      expect(enhancer.mock.calls[1][0].state.random).toEqual({
+        hasError: false,
+        isFulfilled: false,
+        isLoading: true,
+      });
+
+      /* Assert two initial calls. 1st on component load, 2nd when loading process started */
+      await waitFor(() => {
+        expect(enhancer).toHaveBeenCalledTimes(3);
+      });
+
+      /* Assert 3rd state change, when response delivered */
+      expect(enhancer.mock.calls[2][0].state.random).toEqual({
+        hasError: true,
+        isFulfilled: false,
+        isLoading: false,
+      });
     });
   });
 });
