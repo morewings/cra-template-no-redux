@@ -68,8 +68,6 @@
     "lint:js": "npx eslint ./src/",
     "lint:style": "npx stylelint ./src/",
     "fix:style": "npx stylelint ./src/ --fix",
-    "start:docs": "start-storybook -p 6006 -s public",
-    "build:docs": "build-storybook -s public",
     "write:template": "node ./writeTemplateConfig.js",
     "prepare": "husky install"
   },
@@ -86,11 +84,6 @@
     ]
   },
   "devDependencies": {
-    "@storybook/addon-actions": "6.4.19",
-    "@storybook/addon-essentials": "6.4.19",
-    "@storybook/addon-links": "6.4.19",
-    "@storybook/node-logger": "6.4.19",
-    "@storybook/react": "6.4.19",
     "recursive-copy": "2.0.13",
     "rimraf": "3.0.2"
   }
